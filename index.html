@@ -1,264 +1,425 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en-GB">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>20-20-20 Active Screen Timer</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>20-20-20 Timer</title>
+  <meta name="theme-color" content="#0a0b0d" />
+  <style>
+    :root{
+      --bg:#0a0b0d;
+      --text:#f2f4f7;
+      --muted:#a7b0bd;
+      --line:rgba(255,255,255,0.10);
+      --soft:rgba(255,255,255,0.05);
+      --accent:#d7ff7a;
+      --danger:#ff6b8a;
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
 
-<style>
-:root{
-    --bg:#0f1115;
-    --card:#161a22;
-    --accent:#6ee7ff;
-    --text:#e6edf3;
-    --muted:#94a3b8;
-    --border:rgba(255,255,255,0.08);
-}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background: radial-gradient(900px 700px at 50% 20%, rgba(215,255,122,0.07), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 22px;
+    }
 
-*{box-sizing:border-box;}
-html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);}
+    .card{
+      width: min(680px, 100%);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius);
+      padding: 22px;
+      backdrop-filter: blur(10px);
+    }
 
-.container{
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:20px;
-}
+    .top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
 
-.card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:40px;
-    max-width:500px;
-    width:100%;
-    box-shadow:0 20px 60px rgba(0,0,0,0.5);
-}
+    h1{
+      margin:0;
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: 0.2px;
+      color: var(--muted);
+    }
 
-h1{
-    font-weight:600;
-    margin-bottom:10px;
-}
+    .status{
+      font-size: 13px;
+      color: var(--muted);
+      text-align:right;
+      line-height: 1.45;
+      white-space: nowrap;
+    }
 
-.sub{
-    color:var(--muted);
-    font-size:14px;
-    margin-bottom:30px;
-}
+    .time{
+      font-family: var(--mono);
+      font-size: clamp(56px, 9vw, 88px);
+      letter-spacing: 1px;
+      margin: 18px 0 14px 0;
+    }
 
-.timer{
-    font-size:72px;
-    font-weight:600;
-    letter-spacing:2px;
-    margin-bottom:20px;
-}
+    .hint{
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 16px 0;
+      line-height: 1.55;
+    }
 
-.status{
-    font-size:14px;
-    color:var(--muted);
-    margin-bottom:20px;
-}
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
 
-button{
-    background:none;
-    border:1px solid var(--border);
-    color:var(--text);
-    padding:10px 18px;
-    border-radius:12px;
-    margin:5px;
-    cursor:pointer;
-    font-weight:600;
-}
+    button{
+      appearance:none;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight: 650;
+      letter-spacing: 0.2px;
+    }
 
-button.primary{
-    border-color:var(--accent);
-    color:var(--accent);
-}
+    button:hover{ background: var(--soft); }
 
-button:hover{
-    background:rgba(255,255,255,0.05);
-}
+    button.primary{
+      border-color: rgba(215,255,122,0.35);
+      background: rgba(215,255,122,0.10);
+      color: var(--accent);
+    }
 
-.overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(10,12,16,0.95);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    text-align:center;
-}
+    button.danger{
+      border-color: rgba(255,107,138,0.35);
+      background: rgba(255,107,138,0.10);
+      color: var(--danger);
+    }
 
-.overlay.show{
-    display:flex;
-}
+    .overlay{
+      position: fixed;
+      inset: 0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(10px);
+      padding: 22px;
+    }
 
-.overlay h2{
-    font-size:32px;
-    margin-bottom:10px;
-}
+    .overlay.show{ display:flex; }
 
-.overlay .breakTimer{
-    font-size:60px;
-    margin-bottom:20px;
-    color:var(--accent);
-}
+    .modal{
+      width: min(640px, 100%);
+      border: 1px solid rgba(215,255,122,0.25);
+      background: rgba(10,11,13,0.90);
+      border-radius: 22px;
+      padding: 22px;
+    }
 
-.tip{
-    color:var(--muted);
-    max-width:400px;
-    margin-bottom:20px;
-}
-</style>
+    .modal h2{
+      margin:0 0 10px 0;
+      font-size: 18px;
+      font-weight: 750;
+    }
+
+    .breakTime{
+      font-family: var(--mono);
+      font-size: 56px;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin: 10px 0 12px 0;
+    }
+
+    .modal p{
+      margin: 0 0 16px 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+  </style>
 </head>
 
 <body>
-
-<div class="container">
-    <div class="card">
-        <h1>20-20-20 Active Timer</h1>
-        <div class="sub">
-            Counts only active screen time. Pauses if tab is hidden or you are idle.
-        </div>
-
-        <div class="timer" id="timer">20:00</div>
-        <div class="status" id="status">Paused</div>
-
-        <div>
-            <button class="primary" onclick="toggleTimer()">Start</button>
-            <button onclick="restartTimer()">Restart</button>
-            <button onclick="enableNotifications()">Enable Notifications</button>
-            <button onclick="goFullscreen()">Full Screen</button>
-        </div>
+  <main class="card">
+    <div class="top">
+      <h1>20-20-20</h1>
+      <div class="status" id="statusText">Paused</div>
     </div>
-</div>
 
-<div class="overlay" id="breakOverlay">
-    <h2>Look 20 feet away</h2>
-    <div class="breakTimer" id="breakTimer">00:20</div>
-    <div class="tip">
-        Relax your eyes. Blink slowly. Release tension in your shoulders.
+    <div class="time" id="timeLeft">20:00</div>
+
+    <p class="hint">
+      This version counts continuously once started, even if you switch tabs. It will auto pause if your computer sleeps or the browser is suspended for a while.
+    </p>
+
+    <div class="controls">
+      <button class="primary" id="startPauseBtn">Start</button>
+      <button id="restartBtn">Restart 20 minutes</button>
+      <button id="notifBtn">Enable notifications</button>
+      <button id="fullscreenBtn">Full screen</button>
+      <button class="danger" id="resetBtn">Reset</button>
     </div>
-    <button class="primary" onclick="endBreak()">Restart 20 Minutes</button>
-</div>
+  </main>
 
-<script>
-const ACTIVE_TARGET = 20 * 60 * 1000;
-const BREAK_TARGET = 20 * 1000;
-const IDLE_LIMIT = 60 * 1000;
+  <div class="overlay" id="overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h2>Break time</h2>
+      <div class="breakTime" id="breakLeft">00:20</div>
+      <p>Look about 20 feet away for 20 seconds. Blink slowly. Let your eyes relax.</p>
+      <div class="controls">
+        <button class="primary" id="restartAfterBreakBtn">Restart 20 minutes</button>
+        <button id="closeBreakBtn">Close</button>
+      </div>
+    </div>
+  </div>
 
-let running = false;
-let elapsed = 0;
-let lastTick = performance.now();
-let lastActivity = Date.now();
-let breakInterval = null;
+  <script>
+    (function () {
+      const ACTIVE_TARGET_MS = 20 * 60 * 1000;
+      const BREAK_TARGET_MS = 20 * 1000;
 
-function format(ms){
-    const total = Math.ceil(ms/1000);
-    const m = Math.floor(total/60);
-    const s = total % 60;
-    return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
-}
+      // If the page stops running for a while (sleep or heavy suspension),
+      // we treat it as "screen time stopped" and auto pause.
+      const SUSPEND_GAP_MS = 15 * 1000;
 
-function update(){
-    const now = performance.now();
-    const delta = now - lastTick;
-    lastTick = now;
+      const timeLeftEl = document.getElementById("timeLeft");
+      const statusTextEl = document.getElementById("statusText");
+      const startPauseBtn = document.getElementById("startPauseBtn");
+      const restartBtn = document.getElementById("restartBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const fullscreenBtn = document.getElementById("fullscreenBtn");
+      const notifBtn = document.getElementById("notifBtn");
 
-    const visible = document.visibilityState === "visible";
-    const idle = (Date.now() - lastActivity) > IDLE_LIMIT;
+      const overlay = document.getElementById("overlay");
+      const breakLeftEl = document.getElementById("breakLeft");
+      const restartAfterBreakBtn = document.getElementById("restartAfterBreakBtn");
+      const closeBreakBtn = document.getElementById("closeBreakBtn");
 
-    if(running && visible && !idle){
-        elapsed += delta;
-        if(elapsed >= ACTIVE_TARGET){
-            startBreak();
-            return;
+      let running = false;
+      let inBreak = false;
+
+      let elapsedMs = 0;
+      let lastNow = Date.now();
+
+      let breakRemainingMs = BREAK_TARGET_MS;
+      let breakTimer = null;
+
+      function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+      function fmtMMSS(ms){
+        const totalSeconds = Math.ceil(ms / 1000);
+        const m = Math.floor(totalSeconds / 60);
+        const s = totalSeconds % 60;
+        return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+      }
+
+      function setStatus(text){
+        statusTextEl.textContent = text;
+      }
+
+      function updateUI(){
+        const remaining = clamp(ACTIVE_TARGET_MS - elapsedMs, 0, ACTIVE_TARGET_MS);
+        timeLeftEl.textContent = fmtMMSS(remaining);
+
+        if (inBreak) {
+          setStatus("Break");
+          startPauseBtn.textContent = "Start";
+          return;
         }
-    }
 
-    document.getElementById("timer").textContent = format(ACTIVE_TARGET - elapsed);
-    document.getElementById("status").textContent =
-        running ? (idle || !visible ? "Paused (idle/hidden)" : "Counting active time") : "Paused";
+        if (!running) {
+          setStatus("Paused");
+          startPauseBtn.textContent = "Start";
+          return;
+        }
 
-    requestAnimationFrame(update);
-}
+        setStatus("Running");
+        startPauseBtn.textContent = "Pause";
+      }
 
-function toggleTimer(){
-    running = !running;
-    lastTick = performance.now();
-}
-
-function restartTimer(){
-    running = false;
-    elapsed = 0;
-}
-
-function startBreak(){
-    running = false;
-    elapsed = ACTIVE_TARGET;
-    notify();
-    playSound();
-    document.getElementById("breakOverlay").classList.add("show");
-    let remaining = BREAK_TARGET;
-    document.getElementById("breakTimer").textContent = format(remaining);
-    breakInterval = setInterval(()=>{
-        remaining -= 250;
-        document.getElementById("breakTimer").textContent = format(remaining);
-        if(remaining<=0) clearInterval(breakInterval);
-    },250);
-}
-
-function endBreak(){
-    clearInterval(breakInterval);
-    document.getElementById("breakOverlay").classList.remove("show");
-    elapsed = 0;
-}
-
-function enableNotifications(){
-    if("Notification" in window){
+      function requestNotifications(){
+        if (!("Notification" in window)) {
+          return;
+        }
         Notification.requestPermission();
-    }
-}
+      }
 
-function notify(){
-    if("Notification" in window && Notification.permission==="granted"){
-        new Notification("20 minutes reached","Take a 20 second eye break.");
-    }
-}
-
-function playSound(){
-    try{
-        const ctx = new (window.AudioContext||window.webkitAudioContext)();
-        const buffer = ctx.createBuffer(1,ctx.sampleRate*0.8,ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for(let i=0;i<data.length;i++){
-            data[i]=(Math.random()*2-1)*0.2;
+      function notify(){
+        if (!("Notification" in window)) {
+          return;
         }
-        const source = ctx.createBufferSource();
-        source.buffer = buffer;
-        source.connect(ctx.destination);
-        source.start();
-    }catch(e){}
-}
+        if (Notification.permission !== "granted") {
+          return;
+        }
+        new Notification("20 minutes reached", { body: "Take a 20 second eye break." });
+      }
 
-function goFullscreen(){
-    if(!document.fullscreenElement){
-        document.documentElement.requestFullscreen();
-    }else{
-        document.exitFullscreen();
-    }
-}
+      function playNonMusicalAlert(){
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          const ctx = new AudioCtx();
 
-["mousemove","mousedown","keydown","touchstart","wheel"].forEach(evt=>{
-    window.addEventListener(evt,()=>lastActivity=Date.now());
-});
+          const bufferSize = ctx.sampleRate * 0.8;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
 
-requestAnimationFrame(update);
-</script>
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * 0.18;
+          }
 
+          const src = ctx.createBufferSource();
+          src.buffer = buffer;
+
+          const gain = ctx.createGain();
+          gain.gain.value = 0.9;
+
+          src.connect(gain);
+          gain.connect(ctx.destination);
+
+          src.start();
+          src.stop(ctx.currentTime + 0.8);
+
+          setTimeout(() => ctx.close(), 1200);
+        } catch (e) {
+          // If audio is blocked, overlay and notification still work.
+        }
+      }
+
+      function openBreak(){
+        inBreak = true;
+        running = false;
+
+        overlay.classList.add("show");
+        breakRemainingMs = BREAK_TARGET_MS;
+        breakLeftEl.textContent = fmtMMSS(breakRemainingMs);
+
+        notify();
+        playNonMusicalAlert();
+
+        if (breakTimer) {
+          clearInterval(breakTimer);
+        }
+
+        breakTimer = setInterval(() => {
+          breakRemainingMs = clamp(breakRemainingMs - 250, 0, BREAK_TARGET_MS);
+          breakLeftEl.textContent = fmtMMSS(breakRemainingMs);
+          if (breakRemainingMs <= 0) {
+            clearInterval(breakTimer);
+            breakTimer = null;
+          }
+        }, 250);
+
+        updateUI();
+      }
+
+      function closeBreak(){
+        inBreak = false;
+        overlay.classList.remove("show");
+        if (breakTimer) {
+          clearInterval(breakTimer);
+          breakTimer = null;
+        }
+        updateUI();
+      }
+
+      function restart20(){
+        elapsedMs = 0;
+        lastNow = Date.now();
+        updateUI();
+      }
+
+      function resetAll(){
+        running = false;
+        inBreak = false;
+        closeBreak();
+        elapsedMs = 0;
+        lastNow = Date.now();
+        updateUI();
+      }
+
+      function toggleStartPause(){
+        if (inBreak) {
+          return;
+        }
+
+        running = !running;
+        lastNow = Date.now();
+        updateUI();
+      }
+
+      async function toggleFullscreen(){
+        try {
+          if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+          } else {
+            await document.exitFullscreen();
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      function tick(){
+        const now = Date.now();
+        const delta = now - lastNow;
+        lastNow = now;
+
+        if (running && !inBreak) {
+          // If we detect a big gap, assume sleep or suspension and auto pause.
+          if (delta > SUSPEND_GAP_MS) {
+            running = false;
+            setStatus("Paused (sleep detected)");
+            updateUI();
+            requestAnimationFrame(tick);
+            return;
+          }
+
+          elapsedMs += delta;
+
+          if (elapsedMs >= ACTIVE_TARGET_MS) {
+            elapsedMs = ACTIVE_TARGET_MS;
+            openBreak();
+          }
+        }
+
+        updateUI();
+        requestAnimationFrame(tick);
+      }
+
+      startPauseBtn.addEventListener("click", toggleStartPause);
+      restartBtn.addEventListener("click", () => { running = false; restart20(); });
+      resetBtn.addEventListener("click", resetAll);
+      fullscreenBtn.addEventListener("click", toggleFullscreen);
+      notifBtn.addEventListener("click", requestNotifications);
+
+      restartAfterBreakBtn.addEventListener("click", () => {
+        closeBreak();
+        restart20();
+      });
+
+      closeBreakBtn.addEventListener("click", closeBreak);
+
+      updateUI();
+      requestAnimationFrame(tick);
+    })();
+  </script>
 </body>
 </html>
