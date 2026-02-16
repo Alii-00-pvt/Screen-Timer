@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20-20-20 Active Screen Timer</title>
+
+<style>
+:root{
+    --bg:#0f1115;
+    --card:#161a22;
+    --accent:#6ee7ff;
+    --text:#e6edf3;
+    --muted:#94a3b8;
+    --border:rgba(255,255,255,0.08);
+}
+
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);}
+
+.container{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:20px;
+}
+
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:40px;
+    max-width:500px;
+    width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+}
+
+h1{
+    font-weight:600;
+    margin-bottom:10px;
+}
+
+.sub{
+    color:var(--muted);
+    font-size:14px;
+    margin-bottom:30px;
+}
+
+.timer{
+    font-size:72px;
+    font-weight:600;
+    letter-spacing:2px;
+    margin-bottom:20px;
+}
+
+.status{
+    font-size:14px;
+    color:var(--muted);
+    margin-bottom:20px;
+}
+
+button{
+    background:none;
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:10px 18px;
+    border-radius:12px;
+    margin:5px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+button.primary{
+    border-color:var(--accent);
+    color:var(--accent);
+}
+
+button:hover{
+    background:rgba(255,255,255,0.05);
+}
+
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(10,12,16,0.95);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+}
+
+.overlay.show{
+    display:flex;
+}
+
+.overlay h2{
+    font-size:32px;
+    margin-bottom:10px;
+}
+
+.overlay .breakTimer{
+    font-size:60px;
+    margin-bottom:20px;
+    color:var(--accent);
+}
+
+.tip{
+    color:var(--muted);
+    max-width:400px;
+    margin-bottom:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1>20-20-20 Active Timer</h1>
+        <div class="sub">
+            Counts only active screen time. Pauses if tab is hidden or you are idle.
+        </div>
+
+        <div class="timer" id="timer">20:00</div>
+        <div class="status" id="status">Paused</div>
+
+        <div>
+            <button class="primary" onclick="toggleTimer()">Start</button>
+            <button onclick="restartTimer()">Restart</button>
+            <button onclick="enableNotifications()">Enable Notifications</button>
+            <button onclick="goFullscreen()">Full Screen</button>
+        </div>
+    </div>
+</div>
+
+<div class="overlay" id="breakOverlay">
+    <h2>Look 20 feet away</h2>
+    <div class="breakTimer" id="breakTimer">00:20</div>
+    <div class="tip">
+        Relax your eyes. Blink slowly. Release tension in your shoulders.
+    </div>
+    <button class="primary" onclick="endBreak()">Restart 20 Minutes</button>
+</div>
+
+<script>
+const ACTIVE_TARGET = 20 * 60 * 1000;
+const BREAK_TARGET = 20 * 1000;
+const IDLE_LIMIT = 60 * 1000;
+
+let running = false;
+let elapsed = 0;
+let lastTick = performance.now();
+let lastActivity = Date.now();
+let breakInterval = null;
+
+function format(ms){
+    const total = Math.ceil(ms/1000);
+    const m = Math.floor(total/60);
+    const s = total % 60;
+    return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+
+function update(){
+    const now = performance.now();
+    const delta = now - lastTick;
+    lastTick = now;
+
+    const visible = document.visibilityState === "visible";
+    const idle = (Date.now() - lastActivity) > IDLE_LIMIT;
+
+    if(running && visible && !idle){
+        elapsed += delta;
+        if(elapsed >= ACTIVE_TARGET){
+            startBreak();
+            return;
+        }
+    }
+
+    document.getElementById("timer").textContent = format(ACTIVE_TARGET - elapsed);
+    document.getElementById("status").textContent =
+        running ? (idle || !visible ? "Paused (idle/hidden)" : "Counting active time") : "Paused";
+
+    requestAnimationFrame(update);
+}
+
+function toggleTimer(){
+    running = !running;
+    lastTick = performance.now();
+}
+
+function restartTimer(){
+    running = false;
+    elapsed = 0;
+}
+
+function startBreak(){
+    running = false;
+    elapsed = ACTIVE_TARGET;
+    notify();
+    playSound();
+    document.getElementById("breakOverlay").classList.add("show");
+    let remaining = BREAK_TARGET;
+    document.getElementById("breakTimer").textContent = format(remaining);
+    breakInterval = setInterval(()=>{
+        remaining -= 250;
+        document.getElementById("breakTimer").textContent = format(remaining);
+        if(remaining<=0) clearInterval(breakInterval);
+    },250);
+}
+
+function endBreak(){
+    clearInterval(breakInterval);
+    document.getElementById("breakOverlay").classList.remove("show");
+    elapsed = 0;
+}
+
+function enableNotifications(){
+    if("Notification" in window){
+        Notification.requestPermission();
+    }
+}
+
+function notify(){
+    if("Notification" in window && Notification.permission==="granted"){
+        new Notification("20 minutes reached","Take a 20 second eye break.");
+    }
+}
+
+function playSound(){
+    try{
+        const ctx = new (window.AudioContext||window.webkitAudioContext)();
+        const buffer = ctx.createBuffer(1,ctx.sampleRate*0.8,ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for(let i=0;i<data.length;i++){
+            data[i]=(Math.random()*2-1)*0.2;
+        }
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(ctx.destination);
+        source.start();
+    }catch(e){}
+}
+
+function goFullscreen(){
+    if(!document.fullscreenElement){
+        document.documentElement.requestFullscreen();
+    }else{
+        document.exitFullscreen();
+    }
+}
+
+["mousemove","mousedown","keydown","touchstart","wheel"].forEach(evt=>{
+    window.addEventListener(evt,()=>lastActivity=Date.now());
+});
+
+requestAnimationFrame(update);
+</script>
+
+</body>
+</html>
