@@ -21,9 +21,9 @@
   --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
 }
 
-/* ===== Flat, soft themes (no glow, no gradients) ===== */
+/* Two flat themes only */
 
-body.theme-pure-dark{
+body.theme-dark{
   --bg:#000000;
   --card:#0a0a0a;
   --line: rgba(255,255,255,0.14);
@@ -33,17 +33,7 @@ body.theme-pure-dark{
   --btnhover: rgba(255,255,255,0.10);
 }
 
-body.theme-graphite{
-  --bg:#121316;
-  --card:#171a1f;
-  --line: rgba(255,255,255,0.12);
-  --text:#f4f6f8;
-  --muted: rgba(244,246,248,0.65);
-  --btnbg: rgba(255,255,255,0.05);
-  --btnhover: rgba(255,255,255,0.09);
-}
-
-body.theme-paper{
+body.theme-white{
   --bg:#f7f7f5;
   --card:#ffffff;
   --line: rgba(10,10,10,0.12);
@@ -52,18 +42,6 @@ body.theme-paper{
   --btnbg: rgba(10,10,10,0.05);
   --btnhover: rgba(10,10,10,0.09);
 }
-
-body.theme-sepia{
-  --bg:#f4efe6;
-  --card:#fffaf0;
-  --line: rgba(20,12,6,0.14);
-  --text:#140c06;
-  --muted: rgba(20,12,6,0.62);
-  --btnbg: rgba(20,12,6,0.05);
-  --btnhover: rgba(20,12,6,0.09);
-}
-
-/* ===== Base layout ===== */
 
 *{box-sizing:border-box;}
 html,body{height:100%;margin:0;}
@@ -75,7 +53,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:20px;
+  padding:18px;
 }
 
 .card{
@@ -83,28 +61,29 @@ body{
   background: var(--card);
   border:1px solid var(--line);
   border-radius: var(--radius);
-  padding:22px;
+  padding:18px;
 }
 
 .top{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .status{
   font-size: 12px;
   color: var(--muted);
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .time{
   font-family: var(--mono);
-  font-size: clamp(58px, 10vw, 96px);
+  font-size: clamp(52px, 12vw, 94px);
   letter-spacing: 1px;
   margin: 18px 0 16px 0;
+  text-align:left;
 }
 
 .controls{
@@ -127,7 +106,7 @@ body{
 label{
   font-size:12px;
   color: var(--muted);
-  font-weight: 650;
+  font-weight: 700;
 }
 
 input, select{
@@ -135,7 +114,7 @@ input, select{
   outline:none;
   background: transparent;
   color: var(--text);
-  font-weight: 650;
+  font-weight: 700;
   font-family: var(--mono);
 }
 
@@ -145,10 +124,10 @@ button{
   border:1px solid var(--line);
   background: var(--btnbg);
   color: var(--text);
-  padding:8px 12px;
+  padding:10px 12px;
   border-radius: 12px;
   cursor:pointer;
-  font-weight: 750;
+  font-weight: 800;
 }
 
 button:hover{background: var(--btnhover);}
@@ -158,17 +137,21 @@ button.danger{
   border-color: rgba(255,92,122,0.45);
 }
 
-button.primary{
-  border-color: var(--line);
-}
-
 .small{
   margin: 10px 0 0 0;
   font-size: 12px;
   color: var(--muted);
+  line-height: 1.45;
 }
 
-/* ===== Pop-up ===== */
+.notifState{
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+/* Pop-up (stays until dismissed) */
 
 .overlay{
   position:fixed;
@@ -176,12 +159,11 @@ button.primary{
   display:none;
   align-items:center;
   justify-content:center;
-  padding:20px;
+  padding:18px;
   background: rgba(0,0,0,0.55);
 }
 
-body.theme-paper .overlay,
-body.theme-sepia .overlay{
+body.theme-white .overlay{
   background: rgba(10,10,10,0.35);
 }
 
@@ -192,25 +174,26 @@ body.theme-sepia .overlay{
   background: var(--card);
   border:1px solid var(--line);
   border-radius: 16px;
-  padding:22px;
+  padding:18px;
   text-align:center;
 }
 
 .modal h2{
   margin: 0 0 10px 0;
-  font-weight: 850;
+  font-weight: 900;
   font-size: 18px;
 }
 
 .modal p{
-  margin: 0 0 18px 0;
+  margin: 0 0 16px 0;
   color: var(--muted);
   line-height: 1.55;
+  font-size: 14px;
 }
 </style>
 </head>
 
-<body class="theme-pure-dark">
+<body class="theme-dark">
 
 <main class="card">
   <div class="top">
@@ -225,10 +208,8 @@ body.theme-sepia .overlay{
       <div class="field">
         <label for="themeSelect">Theme</label>
         <select id="themeSelect">
-          <option value="theme-pure-dark" selected>Pure Dark</option>
-          <option value="theme-graphite">Graphite</option>
-          <option value="theme-paper">Paper</option>
-          <option value="theme-sepia">Sepia</option>
+          <option value="theme-dark" selected>Dark</option>
+          <option value="theme-white">White</option>
         </select>
       </div>
     </div>
@@ -237,20 +218,24 @@ body.theme-sepia .overlay{
   <div class="time" id="timeDisplay">20:00</div>
 
   <div class="controls">
-    <button class="primary" id="startBtn">Start</button>
+    <button id="startBtn">Start</button>
     <button id="pauseBtn">Pause</button>
     <button class="danger" id="resetBtn">Reset</button>
     <button id="notifBtn">Enable notifications</button>
   </div>
 
-  <p class="small">Keep this tab open. The timer continues while you switch tabs.</p>
+  <p class="notifState" id="notifState">Notifications: unknown</p>
+  <p class="small">Timer continues while you switch tabs (as long as your browser stays open).</p>
 </main>
 
 <div class="overlay" id="overlay">
   <div class="modal" role="dialog" aria-modal="true">
     <h2>Take a break</h2>
     <p>Timer finished.</p>
-    <button class="primary" id="dismissBtn">Dismiss</button>
+    <div class="controls" style="justify-content:center;">
+      <button id="dismissBtn">Dismiss</button>
+      <button id="restartBtn">Restart</button>
+    </div>
   </div>
 </div>
 
@@ -260,9 +245,11 @@ body.theme-sepia .overlay{
   const minutesInput = document.getElementById("minutesInput");
   const themeSelect = document.getElementById("themeSelect");
   const stateText = document.getElementById("stateText");
+  const notifState = document.getElementById("notifState");
 
   const overlay = document.getElementById("overlay");
   const dismissBtn = document.getElementById("dismissBtn");
+  const restartBtn = document.getElementById("restartBtn");
 
   let duration = 20 * 60 * 1000;
   let remaining = duration;
@@ -274,6 +261,14 @@ body.theme-sepia .overlay{
     const m = Math.floor(total / 60);
     const s = total % 60;
     return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+  }
+
+  function setNotifStateText(){
+    if (!("Notification" in window)) {
+      notifState.textContent = "Notifications: not supported";
+      return;
+    }
+    notifState.textContent = "Notifications: " + Notification.permission;
   }
 
   function tick(){
@@ -319,51 +314,79 @@ body.theme-sepia .overlay{
     remaining = 0;
     display.textContent = "00:00";
     stateText.textContent = "Finished";
-    notify();
-    playSound();
+    notifyPersistent();
+    playLongNonMusicalSound();
     overlay.classList.add("show");
   }
 
-  function requestNotif(){
+  async function requestNotif(){
     if (!("Notification" in window)) {
       alert("Notifications are not supported in this browser.");
       return;
     }
-    Notification.requestPermission().then((perm) => {
+
+    try{
+      const perm = await Notification.requestPermission();
+      setNotifStateText();
+
       if (perm === "granted") {
-        new Notification("Notifications enabled", { body: "You will get an alert when the timer ends." });
+        // Test notification so you can see it immediately
+        new Notification("Notifications enabled", {
+          body: "You will get an alert when the timer ends.",
+          requireInteraction: true
+        });
       } else if (perm === "denied") {
         alert("Notifications are blocked. Allow them in your browser site settings and refresh.");
       }
-    });
-  }
-
-  function notify(){
-    if ("Notification" in window && Notification.permission === "granted"){
-      new Notification("Take a break", { body: "Timer finished." });
+    } catch(e){
+      alert("Could not request notification permission. Check browser and system notification settings.");
     }
   }
 
-  function playSound(){
-    // Non musical noise burst
+  function notifyPersistent(){
+    if (!("Notification" in window)) return;
+    if (Notification.permission !== "granted") return;
+
+    // requireInteraction keeps it on screen on supported browsers (Chrome/Edge desktop).
+    // Some mobile browsers ignore it; that is an OS/browser limitation.
+    new Notification("Take a break", {
+      body: "Timer finished.",
+      requireInteraction: true
+    });
+  }
+
+  function playLongNonMusicalSound(){
+    // Longer white-noise burst, still non-musical (no tone, no melody).
     try{
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       const ctx = new AudioCtx();
 
-      const bufferSize = ctx.sampleRate * 0.8;
+      const seconds = 2.5;
+      const bufferSize = Math.floor(ctx.sampleRate * seconds);
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
 
       for (let i = 0; i < data.length; i++){
-        data[i] = (Math.random() * 2 - 1) * 0.18;
+        data[i] = (Math.random() * 2 - 1) * 0.12;
       }
 
       const src = ctx.createBufferSource();
       src.buffer = buffer;
-      src.connect(ctx.destination);
-      src.start();
 
-      setTimeout(() => ctx.close(), 1200);
+      // Gentle fade in/out so it is not harsh
+      const gain = ctx.createGain();
+      const now = ctx.currentTime;
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(0.9, now + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + seconds);
+
+      src.connect(gain);
+      gain.connect(ctx.destination);
+
+      src.start();
+      src.stop(now + seconds);
+
+      setTimeout(() => ctx.close(), (seconds * 1000) + 600);
     } catch(e){}
   }
 
@@ -384,9 +407,15 @@ body.theme-sepia .overlay{
   document.getElementById("pauseBtn").addEventListener("click", pause);
   document.getElementById("resetBtn").addEventListener("click", reset);
   document.getElementById("notifBtn").addEventListener("click", requestNotif);
+
   dismissBtn.addEventListener("click", () => overlay.classList.remove("show"));
+  restartBtn.addEventListener("click", () => {
+    reset();
+    start();
+  });
 
   display.textContent = format(remaining);
+  setNotifStateText();
   requestAnimationFrame(tick);
 })();
 </script>
