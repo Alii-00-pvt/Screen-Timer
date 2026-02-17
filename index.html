@@ -3,19 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>20-20-20 Timer</title>
-  <meta name="theme-color" content="#0a0b0d" />
+  <title>Screen Timer</title>
+  <meta name="theme-color" content="#0b1220" />
   <style>
     :root{
-      --bg:#0a0b0d;
-      --text:#f2f4f7;
-      --muted:#a7b0bd;
-      --line:rgba(255,255,255,0.10);
-      --soft:rgba(255,255,255,0.05);
-      --accent:#d7ff7a;
+      --bg1:#0b1220;
+      --bg2:#0a1a16;
+      --card: rgba(255,255,255,0.06);
+      --line: rgba(255,255,255,0.12);
+      --text:#f3f6fb;
+      --muted: rgba(243,246,251,0.70);
+      --accent:#7cdbff;
+      --accent2:#b7ff8a;
       --danger:#ff6b8a;
-      --radius:16px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
 
@@ -24,9 +26,11 @@
     body{
       margin:0;
       font-family: var(--sans);
-      background: radial-gradient(900px 700px at 50% 20%, rgba(215,255,122,0.07), transparent 60%),
-                  var(--bg);
       color: var(--text);
+      background:
+        radial-gradient(900px 700px at 25% 15%, rgba(124,219,255,0.18), transparent 60%),
+        radial-gradient(900px 700px at 80% 80%, rgba(183,255,138,0.14), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
       display:flex;
       align-items:center;
       justify-content:center;
@@ -34,250 +38,297 @@
     }
 
     .card{
-      width: min(680px, 100%);
+      width: min(720px, 100%);
       border: 1px solid var(--line);
-      background: rgba(255,255,255,0.03);
       border-radius: var(--radius);
+      background: var(--card);
+      backdrop-filter: blur(12px);
       padding: 22px;
-      backdrop-filter: blur(10px);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.55);
     }
 
-    .top{
+    .row{
       display:flex;
-      align-items:flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items:center;
       justify-content:space-between;
-      gap: 16px;
-      margin-bottom: 14px;
-    }
-
-    h1{
-      margin:0;
-      font-size: 16px;
-      font-weight: 650;
-      letter-spacing: 0.2px;
-      color: var(--muted);
-    }
-
-    .status{
-      font-size: 13px;
-      color: var(--muted);
-      text-align:right;
-      line-height: 1.45;
-      white-space: nowrap;
     }
 
     .time{
       font-family: var(--mono);
-      font-size: clamp(56px, 9vw, 88px);
+      font-size: clamp(56px, 10vw, 92px);
       letter-spacing: 1px;
       margin: 18px 0 14px 0;
     }
 
-    .hint{
-      font-size: 13px;
-      color: var(--muted);
-      margin: 0 0 16px 0;
-      line-height: 1.55;
-    }
-
     .controls{
       display:flex;
-      flex-wrap:wrap;
       gap: 10px;
-      margin-top: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+
+    .field{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+    }
+
+    label{
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input[type="number"]{
+      width: 92px;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 14px;
     }
 
     button{
-      appearance:none;
       border: 1px solid var(--line);
-      background: transparent;
+      background: rgba(0,0,0,0.18);
       color: var(--text);
       padding: 10px 12px;
-      border-radius: 12px;
-      cursor:pointer;
-      font-weight: 650;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 700;
       letter-spacing: 0.2px;
     }
 
-    button:hover{ background: var(--soft); }
+    button:hover{ background: rgba(255,255,255,0.07); }
 
     button.primary{
-      border-color: rgba(215,255,122,0.35);
-      background: rgba(215,255,122,0.10);
+      border-color: rgba(124,219,255,0.35);
+      background: rgba(124,219,255,0.12);
       color: var(--accent);
     }
 
     button.danger{
       border-color: rgba(255,107,138,0.35);
-      background: rgba(255,107,138,0.10);
+      background: rgba(255,107,138,0.12);
       color: var(--danger);
     }
 
+    .tiny{
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,0.18);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(243,246,251,0.55);
+      box-shadow: 0 0 0 4px rgba(243,246,251,0.08);
+    }
+    .dot.on{
+      background: var(--accent2);
+      box-shadow: 0 0 0 4px rgba(183,255,138,0.12);
+    }
+
+    /* Pop-up overlay */
     .overlay{
       position: fixed;
       inset: 0;
       display:none;
       align-items:center;
       justify-content:center;
-      background: rgba(0,0,0,0.65);
-      backdrop-filter: blur(10px);
       padding: 22px;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(12px);
+      z-index: 999;
     }
-
     .overlay.show{ display:flex; }
 
     .modal{
-      width: min(640px, 100%);
-      border: 1px solid rgba(215,255,122,0.25);
-      background: rgba(10,11,13,0.90);
+      width: min(620px, 100%);
       border-radius: 22px;
+      border: 1px solid rgba(183,255,138,0.35);
+      background: rgba(8,10,14,0.86);
       padding: 22px;
+      box-shadow: 0 28px 90px rgba(0,0,0,0.6);
+      text-align:center;
     }
-
     .modal h2{
-      margin:0 0 10px 0;
-      font-size: 18px;
-      font-weight: 750;
+      margin: 0 0 10px 0;
+      font-size: 22px;
+      font-weight: 850;
+      letter-spacing: 0.2px;
     }
-
-    .breakTime{
-      font-family: var(--mono);
-      font-size: 56px;
-      letter-spacing: 1px;
-      color: var(--accent);
-      margin: 10px 0 12px 0;
-    }
-
     .modal p{
-      margin: 0 0 16px 0;
+      margin: 0 0 18px 0;
       color: var(--muted);
       line-height: 1.6;
       font-size: 14px;
     }
+    .modal .big{
+      font-family: var(--mono);
+      font-size: 46px;
+      color: var(--accent2);
+      letter-spacing: 1px;
+      margin: 8px 0 16px 0;
+    }
+
+    /* Theme switch (simple, not flashy) */
+    body.theme-slate{
+      --bg1:#0b1220; --bg2:#0a1a16; --accent:#7cdbff; --accent2:#b7ff8a;
+    }
+    body.theme-sand{
+      --bg1:#120f0b; --bg2:#16130f; --accent:#ffd38a; --accent2:#a7f3d0;
+      --card: rgba(255,255,255,0.05);
+    }
+    body.theme-ink{
+      --bg1:#090a0c; --bg2:#0b0c10; --accent:#c4b5fd; --accent2:#93c5fd;
+      --card: rgba(255,255,255,0.05);
+    }
   </style>
 </head>
 
-<body>
+<body class="theme-slate">
   <main class="card">
-    <div class="top">
-      <h1>20-20-20</h1>
-      <div class="status" id="statusText">Paused</div>
+    <div class="row">
+      <div class="pill" id="statePill">
+        <span class="dot" id="stateDot"></span>
+        <span id="stateText">Stopped</span>
+      </div>
+
+      <div class="controls">
+        <div class="field">
+          <label for="minutesInput">Minutes</label>
+          <input id="minutesInput" type="number" min="1" max="600" value="20" />
+        </div>
+
+        <div class="field">
+          <label for="themeSelect">Theme</label>
+          <select id="themeSelect" style="border:0;background:transparent;color:var(--text);font-weight:700;">
+            <option value="theme-slate" selected>Slate</option>
+            <option value="theme-ink">Ink</option>
+            <option value="theme-sand">Sand</option>
+          </select>
+        </div>
+      </div>
     </div>
 
-    <div class="time" id="timeLeft">20:00</div>
-
-    <p class="hint">
-      This version counts continuously once started, even if you switch tabs. It will auto pause if your computer sleeps or the browser is suspended for a while.
-    </p>
+    <div class="time" id="timeDisplay">20:00</div>
 
     <div class="controls">
-      <button class="primary" id="startPauseBtn">Start</button>
-      <button id="restartBtn">Restart 20 minutes</button>
+      <button class="primary" id="startBtn">Start</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn" class="danger">Reset</button>
       <button id="notifBtn">Enable notifications</button>
-      <button id="fullscreenBtn">Full screen</button>
-      <button class="danger" id="resetBtn">Reset</button>
+      <button id="fsBtn">Full screen</button>
     </div>
+
+    <p class="tiny">Keep this tab open. The timer will continue even if you switch tabs.</p>
   </main>
 
+  <!-- Pop-up -->
   <div class="overlay" id="overlay">
     <div class="modal" role="dialog" aria-modal="true">
-      <h2>Break time</h2>
-      <div class="breakTime" id="breakLeft">00:20</div>
-      <p>Look about 20 feet away for 20 seconds. Blink slowly. Let your eyes relax.</p>
-      <div class="controls">
-        <button class="primary" id="restartAfterBreakBtn">Restart 20 minutes</button>
-        <button id="closeBreakBtn">Close</button>
+      <h2>Take a break</h2>
+      <div class="big">Time is up</div>
+      <p>Step back for a moment. Rest your eyes. Breathe.</p>
+      <div class="controls" style="justify-content:center;">
+        <button class="primary" id="dismissBtn">Dismiss</button>
+        <button id="restartBtn">Restart</button>
       </div>
     </div>
   </div>
 
   <script>
-    (function () {
-      const ACTIVE_TARGET_MS = 20 * 60 * 1000;
-      const BREAK_TARGET_MS = 20 * 1000;
+    (function(){
+      const timeDisplay = document.getElementById("timeDisplay");
+      const minutesInput = document.getElementById("minutesInput");
+      const themeSelect = document.getElementById("themeSelect");
 
-      // If the page stops running for a while (sleep or heavy suspension),
-      // we treat it as "screen time stopped" and auto pause.
-      const SUSPEND_GAP_MS = 15 * 1000;
-
-      const timeLeftEl = document.getElementById("timeLeft");
-      const statusTextEl = document.getElementById("statusText");
-      const startPauseBtn = document.getElementById("startPauseBtn");
-      const restartBtn = document.getElementById("restartBtn");
+      const startBtn = document.getElementById("startBtn");
+      const pauseBtn = document.getElementById("pauseBtn");
       const resetBtn = document.getElementById("resetBtn");
-      const fullscreenBtn = document.getElementById("fullscreenBtn");
       const notifBtn = document.getElementById("notifBtn");
+      const fsBtn = document.getElementById("fsBtn");
 
       const overlay = document.getElementById("overlay");
-      const breakLeftEl = document.getElementById("breakLeft");
-      const restartAfterBreakBtn = document.getElementById("restartAfterBreakBtn");
-      const closeBreakBtn = document.getElementById("closeBreakBtn");
+      const dismissBtn = document.getElementById("dismissBtn");
+      const restartBtn = document.getElementById("restartBtn");
 
+      const stateDot = document.getElementById("stateDot");
+      const stateText = document.getElementById("stateText");
+
+      let durationMs = 20 * 60 * 1000;
+      let remainingMs = durationMs;
       let running = false;
-      let inBreak = false;
 
-      let elapsedMs = 0;
-      let lastNow = Date.now();
-
-      let breakRemainingMs = BREAK_TARGET_MS;
-      let breakTimer = null;
+      let lastTick = performance.now();
+      let rafId = null;
 
       function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
-      function fmtMMSS(ms){
+      function fmt(ms){
         const totalSeconds = Math.ceil(ms / 1000);
         const m = Math.floor(totalSeconds / 60);
         const s = totalSeconds % 60;
         return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
       }
 
-      function setStatus(text){
-        statusTextEl.textContent = text;
+      function setState(isRunning){
+        stateDot.classList.toggle("on", isRunning);
+        stateText.textContent = isRunning ? "Running" : "Stopped";
       }
 
-      function updateUI(){
-        const remaining = clamp(ACTIVE_TARGET_MS - elapsedMs, 0, ACTIVE_TARGET_MS);
-        timeLeftEl.textContent = fmtMMSS(remaining);
+      function updateDisplay(){
+        timeDisplay.textContent = fmt(remainingMs);
+      }
 
-        if (inBreak) {
-          setStatus("Break");
-          startPauseBtn.textContent = "Start";
-          return;
-        }
-
-        if (!running) {
-          setStatus("Paused");
-          startPauseBtn.textContent = "Start";
-          return;
-        }
-
-        setStatus("Running");
-        startPauseBtn.textContent = "Pause";
+      function setDurationFromInput(){
+        const mins = clamp(Number(minutesInput.value || 20), 1, 600);
+        minutesInput.value = String(mins);
+        durationMs = mins * 60 * 1000;
+        remainingMs = durationMs;
+        updateDisplay();
       }
 
       function requestNotifications(){
-        if (!("Notification" in window)) {
-          return;
-        }
+        if (!("Notification" in window)) { return; }
         Notification.requestPermission();
       }
 
-      function notify(){
-        if (!("Notification" in window)) {
-          return;
-        }
-        if (Notification.permission !== "granted") {
-          return;
-        }
-        new Notification("20 minutes reached", { body: "Take a 20 second eye break." });
+      function sendNotification(){
+        if (!("Notification" in window)) { return; }
+        if (Notification.permission !== "granted") { return; }
+        new Notification("Take a break", { body: "Timer finished." });
       }
 
-      function playNonMusicalAlert(){
-        try {
+      function playAlertSound(){
+        // Non musical noise burst
+        try{
           const AudioCtx = window.AudioContext || window.webkitAudioContext;
           const ctx = new AudioCtx();
 
-          const bufferSize = ctx.sampleRate * 0.8;
+          const bufferSize = ctx.sampleRate * 0.9;
           const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
           const data = buffer.getChannelData(0);
 
@@ -295,130 +346,120 @@
           gain.connect(ctx.destination);
 
           src.start();
-          src.stop(ctx.currentTime + 0.8);
+          src.stop(ctx.currentTime + 0.9);
 
           setTimeout(() => ctx.close(), 1200);
-        } catch (e) {
-          // If audio is blocked, overlay and notification still work.
-        }
+        } catch(e){}
       }
 
-      function openBreak(){
-        inBreak = true;
-        running = false;
-
+      function showPopup(){
         overlay.classList.add("show");
-        breakRemainingMs = BREAK_TARGET_MS;
-        breakLeftEl.textContent = fmtMMSS(breakRemainingMs);
-
-        notify();
-        playNonMusicalAlert();
-
-        if (breakTimer) {
-          clearInterval(breakTimer);
-        }
-
-        breakTimer = setInterval(() => {
-          breakRemainingMs = clamp(breakRemainingMs - 250, 0, BREAK_TARGET_MS);
-          breakLeftEl.textContent = fmtMMSS(breakRemainingMs);
-          if (breakRemainingMs <= 0) {
-            clearInterval(breakTimer);
-            breakTimer = null;
-          }
-        }, 250);
-
-        updateUI();
       }
 
-      function closeBreak(){
-        inBreak = false;
+      function hidePopup(){
         overlay.classList.remove("show");
-        if (breakTimer) {
-          clearInterval(breakTimer);
-          breakTimer = null;
-        }
-        updateUI();
       }
 
-      function restart20(){
-        elapsedMs = 0;
-        lastNow = Date.now();
-        updateUI();
-      }
-
-      function resetAll(){
+      function finish(){
         running = false;
-        inBreak = false;
-        closeBreak();
-        elapsedMs = 0;
-        lastNow = Date.now();
-        updateUI();
+        setState(false);
+        remainingMs = 0;
+        updateDisplay();
+        sendNotification();
+        playAlertSound();
+        showPopup();
+        stopLoop();
       }
 
-      function toggleStartPause(){
-        if (inBreak) {
-          return;
+      function loop(){
+        const now = performance.now();
+        const dt = now - lastTick;
+        lastTick = now;
+
+        if (running) {
+          remainingMs -= dt;
+          if (remainingMs <= 0) {
+            finish();
+            return;
+          }
+          updateDisplay();
         }
 
-        running = !running;
-        lastNow = Date.now();
-        updateUI();
+        rafId = requestAnimationFrame(loop);
+      }
+
+      function start(){
+        hidePopup();
+        if (remainingMs <= 0) {
+          remainingMs = durationMs;
+        }
+        running = true;
+        setState(true);
+        lastTick = performance.now();
+        startLoop();
+      }
+
+      function pause(){
+        running = false;
+        setState(false);
+      }
+
+      function reset(){
+        running = false;
+        setState(false);
+        hidePopup();
+        remainingMs = durationMs;
+        updateDisplay();
+      }
+
+      function startLoop(){
+        if (rafId) { return; }
+        rafId = requestAnimationFrame(loop);
+      }
+
+      function stopLoop(){
+        if (!rafId) { return; }
+        cancelAnimationFrame(rafId);
+        rafId = null;
       }
 
       async function toggleFullscreen(){
-        try {
+        try{
           if (!document.fullscreenElement) {
             await document.documentElement.requestFullscreen();
           } else {
             await document.exitFullscreen();
           }
-        } catch (e) {
-          // ignore
-        }
+        } catch(e){}
       }
 
-      function tick(){
-        const now = Date.now();
-        const delta = now - lastNow;
-        lastNow = now;
-
-        if (running && !inBreak) {
-          // If we detect a big gap, assume sleep or suspension and auto pause.
-          if (delta > SUSPEND_GAP_MS) {
-            running = false;
-            setStatus("Paused (sleep detected)");
-            updateUI();
-            requestAnimationFrame(tick);
-            return;
-          }
-
-          elapsedMs += delta;
-
-          if (elapsedMs >= ACTIVE_TARGET_MS) {
-            elapsedMs = ACTIVE_TARGET_MS;
-            openBreak();
-          }
-        }
-
-        updateUI();
-        requestAnimationFrame(tick);
-      }
-
-      startPauseBtn.addEventListener("click", toggleStartPause);
-      restartBtn.addEventListener("click", () => { running = false; restart20(); });
-      resetBtn.addEventListener("click", resetAll);
-      fullscreenBtn.addEventListener("click", toggleFullscreen);
-      notifBtn.addEventListener("click", requestNotifications);
-
-      restartAfterBreakBtn.addEventListener("click", () => {
-        closeBreak();
-        restart20();
+      // Events
+      minutesInput.addEventListener("change", () => {
+        setDurationFromInput();
       });
 
-      closeBreakBtn.addEventListener("click", closeBreak);
+      themeSelect.addEventListener("change", () => {
+        document.body.classList.remove("theme-slate","theme-ink","theme-sand");
+        document.body.classList.add(themeSelect.value);
+      });
 
-      updateUI();
-      requestAnimationFrame(tick);
+      startBtn.addEventListener("click", start);
+      pauseBtn.addEventListener("click", pause);
+      resetBtn.addEventListener("click", reset);
+      notifBtn.addEventListener("click", requestNotifications);
+      fsBtn.addEventListener("click", toggleFullscreen);
+
+      dismissBtn.addEventListener("click", hidePopup);
+      restartBtn.addEventListener("click", () => {
+        setDurationFromInput();
+        start();
+      });
+
+      // Init
+      setDurationFromInput();
+      setState(false);
+      updateDisplay();
+      startLoop();
     })();
   </script>
 </body>
