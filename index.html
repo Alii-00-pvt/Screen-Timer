@@ -19,10 +19,10 @@
   --danger:#ff5c7a;
   --radius:14px;
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
-  --sans: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  --sans: 'Inter', system-ui, -apple-system, Segoe UI, Roboto;
 }
 
-/* Dark Theme */
+/* Dark */
 body.theme-dark{
   --bg:#000;
   --card:#0a0a0a;
@@ -33,7 +33,7 @@ body.theme-dark{
   --btnhover:rgba(255,255,255,0.12);
 }
 
-/* White Theme */
+/* White */
 body.theme-white{
   --bg:#f6f6f6;
   --card:#ffffff;
@@ -57,21 +57,20 @@ body{
   padding:16px;
 }
 
-/* Title Styling */
-.title{
-  font-size:18px;
-  font-weight:600;
-  letter-spacing:0.5px;
-  margin-bottom:18px;
-  opacity:0.95;
-}
-
 .card{
   width:min(620px,100%);
   background:var(--card);
   border:1px solid var(--line);
   border-radius:var(--radius);
   padding:22px;
+}
+
+.title{
+  font-size:18px;
+  font-weight:600;
+  letter-spacing:0.4px;
+  margin-bottom:18px;
+  opacity:0.95;
 }
 
 .top{
@@ -137,16 +136,10 @@ button{
 
 button:hover{background:var(--btnhover);}
 
-button.danger{
-  border-color:rgba(255,92,122,0.4);
-  color:var(--danger);
-}
-
 .small{
   font-size:12px;
   color:var(--muted);
   margin-top:10px;
-  line-height:1.4;
 }
 
 .notifState{
@@ -224,12 +217,11 @@ body.theme-white .overlay{
 <div class="controls">
   <button id="startBtn">Start</button>
   <button id="pauseBtn">Pause</button>
-  <button class="danger" id="resetBtn">Reset</button>
-  <button id="enableNotifBtn">Notifications ON</button>
-  <button id="disableNotifBtn">Notifications OFF</button>
+  <button id="resetBtn">Reset</button>
+  <button id="enableNotifBtn">Enable Notifications</button>
 </div>
 
-<p class="notifState" id="notifState">Permission: unknown | Website setting: OFF</p>
+<p class="notifState" id="notifState">Permission: unknown</p>
 <p class="small">Timer continues while switching tabs (browser must remain open).</p>
 
 </main>
@@ -261,43 +253,30 @@ let duration = 20*60*1000;
 let remaining = duration;
 let running = false;
 let lastTick = performance.now();
-let notificationsEnabled = localStorage.getItem("notificationsEnabled")==="true";
 
 function updateNotifUI(){
   if(!("Notification" in window)){
     notifState.textContent="Notifications not supported";
     return;
   }
-  notifState.textContent=
-    "Permission: "+Notification.permission+
-    " | Website setting: "+(notificationsEnabled?"ON":"OFF");
+  notifState.textContent="Permission: "+Notification.permission;
 }
 
 async function enableNotifications(){
   if(!("Notification" in window)) return;
   const perm=await Notification.requestPermission();
+  updateNotifUI();
+
   if(perm==="granted"){
-    notificationsEnabled=true;
-    localStorage.setItem("notificationsEnabled","true");
     new Notification("Notifications enabled",{
-      body:"You will receive alerts when timer finishes.",
+      body:"You will receive alerts when the timer finishes.",
       requireInteraction:true
     });
-  }else{
-    notificationsEnabled=false;
-    localStorage.setItem("notificationsEnabled","false");
   }
-  updateNotifUI();
-}
-
-function disableNotifications(){
-  notificationsEnabled=false;
-  localStorage.setItem("notificationsEnabled","false");
-  updateNotifUI();
 }
 
 function sendNotification(){
-  if(!notificationsEnabled) return;
+  if(!("Notification" in window)) return;
   if(Notification.permission!=="granted") return;
 
   new Notification("Take a break",{
@@ -373,7 +352,6 @@ document.getElementById("startBtn").onclick=start;
 document.getElementById("pauseBtn").onclick=pause;
 document.getElementById("resetBtn").onclick=reset;
 document.getElementById("enableNotifBtn").onclick=enableNotifications;
-document.getElementById("disableNotifBtn").onclick=disableNotifications;
 
 dismissBtn.onclick=()=>overlay.classList.remove("show");
 restartBtn.onclick=()=>{ reset(); start(); };
