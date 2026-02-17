@@ -1,194 +1,184 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Screen Timer</title>
 
 <style>
 :root{
-  --bg:#000000;
+  --bg:#000;
   --card:#0a0a0a;
-  --line: rgba(255,255,255,0.14);
+  --line:rgba(255,255,255,0.15);
   --text:#ffffff;
-  --muted: rgba(255,255,255,0.68);
-  --btnbg: rgba(255,255,255,0.06);
-  --btnhover: rgba(255,255,255,0.10);
+  --muted:rgba(255,255,255,0.65);
+  --btnbg:rgba(255,255,255,0.06);
+  --btnhover:rgba(255,255,255,0.12);
   --danger:#ff5c7a;
-
-  --radius:16px;
+  --radius:14px;
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
-  --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
 }
 
-/* Two flat themes only */
-
+/* Dark theme */
 body.theme-dark{
-  --bg:#000000;
+  --bg:#000;
   --card:#0a0a0a;
-  --line: rgba(255,255,255,0.14);
+  --line:rgba(255,255,255,0.15);
   --text:#ffffff;
-  --muted: rgba(255,255,255,0.68);
-  --btnbg: rgba(255,255,255,0.06);
-  --btnhover: rgba(255,255,255,0.10);
+  --muted:rgba(255,255,255,0.65);
+  --btnbg:rgba(255,255,255,0.06);
+  --btnhover:rgba(255,255,255,0.12);
 }
 
+/* White theme */
 body.theme-white{
-  --bg:#f7f7f5;
+  --bg:#f6f6f6;
   --card:#ffffff;
-  --line: rgba(10,10,10,0.12);
-  --text:#0a0a0a;
-  --muted: rgba(10,10,10,0.62);
-  --btnbg: rgba(10,10,10,0.05);
-  --btnhover: rgba(10,10,10,0.09);
+  --line:rgba(0,0,0,0.12);
+  --text:#000000;
+  --muted:rgba(0,0,0,0.6);
+  --btnbg:rgba(0,0,0,0.05);
+  --btnhover:rgba(0,0,0,0.09);
 }
 
 *{box-sizing:border-box;}
 html,body{height:100%;margin:0;}
 
 body{
-  font-family: var(--sans);
-  background: var(--bg);
-  color: var(--text);
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:18px;
+  padding:16px;
 }
 
 .card{
-  width:min(640px,100%);
-  background: var(--card);
+  width:min(620px,100%);
+  background:var(--card);
   border:1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius:var(--radius);
   padding:18px;
 }
 
 .top{
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  gap: 10px;
-  flex-wrap: wrap;
+  flex-wrap:wrap;
+  gap:10px;
 }
 
 .status{
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 700;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:700;
 }
 
 .time{
-  font-family: var(--mono);
-  font-size: clamp(52px, 12vw, 94px);
-  letter-spacing: 1px;
-  margin: 18px 0 16px 0;
-  text-align:left;
+  font-family:var(--mono);
+  font-size:clamp(56px,10vw,92px);
+  margin:20px 0;
 }
 
 .controls{
   display:flex;
-  gap:10px;
-  flex-wrap: wrap;
-  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
 }
 
 .field{
   display:flex;
+  gap:6px;
   align-items:center;
-  gap:8px;
   border:1px solid var(--line);
-  border-radius: 12px;
-  padding:8px 10px;
-  background: transparent;
+  padding:6px 8px;
+  border-radius:10px;
 }
 
 label{
   font-size:12px;
-  color: var(--muted);
-  font-weight: 700;
+  color:var(--muted);
+  font-weight:700;
 }
 
 input, select{
   border:0;
   outline:none;
-  background: transparent;
-  color: var(--text);
-  font-weight: 700;
-  font-family: var(--mono);
+  background:transparent;
+  color:var(--text);
+  font-family:var(--mono);
+  font-weight:700;
 }
 
-input[type="number"]{width:80px;}
+input[type="number"]{width:70px;}
 
 button{
   border:1px solid var(--line);
-  background: var(--btnbg);
-  color: var(--text);
-  padding:10px 12px;
-  border-radius: 12px;
+  background:var(--btnbg);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:10px;
   cursor:pointer;
-  font-weight: 800;
+  font-weight:800;
 }
 
-button:hover{background: var(--btnhover);}
+button:hover{background:var(--btnhover);}
 
 button.danger{
-  color: var(--danger);
-  border-color: rgba(255,92,122,0.45);
+  border-color:rgba(255,92,122,0.4);
+  color:var(--danger);
 }
 
 .small{
-  margin: 10px 0 0 0;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.45;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:8px;
+  line-height:1.4;
 }
 
 .notifState{
-  margin: 8px 0 0 0;
-  font-size: 12px;
-  color: var(--muted);
-  font-family: var(--mono);
+  font-size:12px;
+  font-family:var(--mono);
+  margin-top:6px;
+  color:var(--muted);
 }
 
-/* Pop-up (stays until dismissed) */
-
+/* Overlay */
 .overlay{
   position:fixed;
   inset:0;
   display:none;
   align-items:center;
   justify-content:center;
-  padding:18px;
-  background: rgba(0,0,0,0.55);
+  background:rgba(0,0,0,0.55);
 }
 
 body.theme-white .overlay{
-  background: rgba(10,10,10,0.35);
+  background:rgba(0,0,0,0.3);
 }
 
 .overlay.show{display:flex;}
 
 .modal{
-  width:min(520px,100%);
-  background: var(--card);
+  background:var(--card);
   border:1px solid var(--line);
-  border-radius: 16px;
+  border-radius:var(--radius);
   padding:18px;
   text-align:center;
+  width:min(480px,100%);
 }
 
 .modal h2{
-  margin: 0 0 10px 0;
-  font-weight: 900;
-  font-size: 18px;
+  margin:0 0 10px 0;
+  font-size:18px;
+  font-weight:900;
 }
 
 .modal p{
-  margin: 0 0 16px 0;
-  color: var(--muted);
-  line-height: 1.55;
-  font-size: 14px;
+  margin:0 0 14px 0;
+  color:var(--muted);
 }
 </style>
 </head>
@@ -196,40 +186,43 @@ body.theme-white .overlay{
 <body class="theme-dark">
 
 <main class="card">
-  <div class="top">
-    <div class="status" id="stateText">Stopped</div>
 
-    <div class="controls">
-      <div class="field">
-        <label for="minutesInput">Minutes</label>
-        <input id="minutesInput" type="number" min="1" max="600" value="20" />
-      </div>
-
-      <div class="field">
-        <label for="themeSelect">Theme</label>
-        <select id="themeSelect">
-          <option value="theme-dark" selected>Dark</option>
-          <option value="theme-white">White</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <div class="time" id="timeDisplay">20:00</div>
+<div class="top">
+  <div class="status" id="stateText">Stopped</div>
 
   <div class="controls">
-    <button id="startBtn">Start</button>
-    <button id="pauseBtn">Pause</button>
-    <button class="danger" id="resetBtn">Reset</button>
-    <button id="notifBtn">Enable notifications</button>
-  </div>
+    <div class="field">
+      <label>Minutes</label>
+      <input id="minutesInput" type="number" min="1" max="600" value="20">
+    </div>
 
-  <p class="notifState" id="notifState">Notifications: unknown</p>
-  <p class="small">Timer continues while you switch tabs (as long as your browser stays open).</p>
+    <div class="field">
+      <label>Theme</label>
+      <select id="themeSelect">
+        <option value="theme-dark" selected>Dark</option>
+        <option value="theme-white">White</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="time" id="timeDisplay">20:00</div>
+
+<div class="controls">
+  <button id="startBtn">Start</button>
+  <button id="pauseBtn">Pause</button>
+  <button class="danger" id="resetBtn">Reset</button>
+  <button id="enableNotifBtn">Notifications ON</button>
+  <button id="disableNotifBtn">Notifications OFF</button>
+</div>
+
+<p class="notifState" id="notifState">Permission: unknown | Website setting: OFF</p>
+<p class="small">Timer continues while switching tabs (browser must stay open).</p>
+
 </main>
 
 <div class="overlay" id="overlay">
-  <div class="modal" role="dialog" aria-modal="true">
+  <div class="modal">
     <h2>Take a break</h2>
     <p>Timer finished.</p>
     <div class="controls" style="justify-content:center;">
@@ -241,182 +234,186 @@ body.theme-white .overlay{
 
 <script>
 (function(){
-  const display = document.getElementById("timeDisplay");
-  const minutesInput = document.getElementById("minutesInput");
-  const themeSelect = document.getElementById("themeSelect");
-  const stateText = document.getElementById("stateText");
-  const notifState = document.getElementById("notifState");
 
-  const overlay = document.getElementById("overlay");
-  const dismissBtn = document.getElementById("dismissBtn");
-  const restartBtn = document.getElementById("restartBtn");
+const display = document.getElementById("timeDisplay");
+const minutesInput = document.getElementById("minutesInput");
+const themeSelect = document.getElementById("themeSelect");
+const stateText = document.getElementById("stateText");
+const notifState = document.getElementById("notifState");
 
-  let duration = 20 * 60 * 1000;
-  let remaining = duration;
-  let running = false;
-  let lastTick = performance.now();
+const overlay = document.getElementById("overlay");
+const dismissBtn = document.getElementById("dismissBtn");
+const restartBtn = document.getElementById("restartBtn");
 
-  function format(ms){
-    const total = Math.ceil(ms / 1000);
-    const m = Math.floor(total / 60);
-    const s = total % 60;
-    return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+let duration = 20*60*1000;
+let remaining = duration;
+let running = false;
+let lastTick = performance.now();
+let notificationsEnabled = localStorage.getItem("notificationsEnabled")==="true";
+
+/* Notification control */
+
+function updateNotifUI(){
+  if(!("Notification" in window)){
+    notifState.textContent="Notifications not supported";
+    return;
   }
+  notifState.textContent=
+    "Permission: "+Notification.permission+
+    " | Website setting: "+(notificationsEnabled?"ON":"OFF");
+}
 
-  function setNotifStateText(){
-    if (!("Notification" in window)) {
-      notifState.textContent = "Notifications: not supported";
-      return;
-    }
-    notifState.textContent = "Notifications: " + Notification.permission;
+async function enableNotifications(){
+  if(!("Notification" in window)){
+    alert("Notifications not supported.");
+    return;
   }
-
-  function tick(){
-    const now = performance.now();
-    const dt = now - lastTick;
-    lastTick = now;
-
-    if (running){
-      remaining -= dt;
-      if (remaining <= 0){
-        finish();
-        return;
-      }
-    }
-
-    display.textContent = format(remaining);
-    requestAnimationFrame(tick);
-  }
-
-  function start(){
-    overlay.classList.remove("show");
-    if (remaining <= 0) remaining = duration;
-    running = true;
-    stateText.textContent = "Running";
-    lastTick = performance.now();
-  }
-
-  function pause(){
-    running = false;
-    stateText.textContent = "Paused";
-  }
-
-  function reset(){
-    running = false;
-    remaining = duration;
-    display.textContent = format(remaining);
-    stateText.textContent = "Stopped";
-    overlay.classList.remove("show");
-  }
-
-  function finish(){
-    running = false;
-    remaining = 0;
-    display.textContent = "00:00";
-    stateText.textContent = "Finished";
-    notifyPersistent();
-    playLongNonMusicalSound();
-    overlay.classList.add("show");
-  }
-
-  async function requestNotif(){
-    if (!("Notification" in window)) {
-      alert("Notifications are not supported in this browser.");
-      return;
-    }
-
-    try{
-      const perm = await Notification.requestPermission();
-      setNotifStateText();
-
-      if (perm === "granted") {
-        // Test notification so you can see it immediately
-        new Notification("Notifications enabled", {
-          body: "You will get an alert when the timer ends.",
-          requireInteraction: true
-        });
-      } else if (perm === "denied") {
-        alert("Notifications are blocked. Allow them in your browser site settings and refresh.");
-      }
-    } catch(e){
-      alert("Could not request notification permission. Check browser and system notification settings.");
-    }
-  }
-
-  function notifyPersistent(){
-    if (!("Notification" in window)) return;
-    if (Notification.permission !== "granted") return;
-
-    // requireInteraction keeps it on screen on supported browsers (Chrome/Edge desktop).
-    // Some mobile browsers ignore it; that is an OS/browser limitation.
-    new Notification("Take a break", {
-      body: "Timer finished.",
-      requireInteraction: true
+  const perm=await Notification.requestPermission();
+  if(perm==="granted"){
+    notificationsEnabled=true;
+    localStorage.setItem("notificationsEnabled","true");
+    new Notification("Notifications enabled",{
+      body:"You will receive alerts when timer finishes.",
+      requireInteraction:true
     });
+  }else{
+    notificationsEnabled=false;
+    localStorage.setItem("notificationsEnabled","false");
+  }
+  updateNotifUI();
+}
+
+function disableNotifications(){
+  notificationsEnabled=false;
+  localStorage.setItem("notificationsEnabled","false");
+  updateNotifUI();
+}
+
+function sendNotification(){
+  if(!notificationsEnabled) return;
+  if(!("Notification" in window)) return;
+  if(Notification.permission!=="granted") return;
+
+  new Notification("Take a break",{
+    body:"Timer finished.",
+    requireInteraction:true
+  });
+}
+
+/* Timer */
+
+function format(ms){
+  const t=Math.ceil(ms/1000);
+  const m=Math.floor(t/60);
+  const s=t%60;
+  return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+
+function tick(){
+  const now=performance.now();
+  const dt=now-lastTick;
+  lastTick=now;
+
+  if(running){
+    remaining-=dt;
+    if(remaining<=0){
+      finish();
+      return;
+    }
   }
 
-  function playLongNonMusicalSound(){
-    // Longer white-noise burst, still non-musical (no tone, no melody).
-    try{
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      const ctx = new AudioCtx();
-
-      const seconds = 2.5;
-      const bufferSize = Math.floor(ctx.sampleRate * seconds);
-      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-
-      for (let i = 0; i < data.length; i++){
-        data[i] = (Math.random() * 2 - 1) * 0.12;
-      }
-
-      const src = ctx.createBufferSource();
-      src.buffer = buffer;
-
-      // Gentle fade in/out so it is not harsh
-      const gain = ctx.createGain();
-      const now = ctx.currentTime;
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.9, now + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + seconds);
-
-      src.connect(gain);
-      gain.connect(ctx.destination);
-
-      src.start();
-      src.stop(now + seconds);
-
-      setTimeout(() => ctx.close(), (seconds * 1000) + 600);
-    } catch(e){}
-  }
-
-  minutesInput.addEventListener("change", () => {
-    const m = Math.max(1, Number(minutesInput.value || 20));
-    minutesInput.value = String(m);
-    duration = m * 60 * 1000;
-    remaining = duration;
-    display.textContent = format(remaining);
-    if (!running) stateText.textContent = "Stopped";
-  });
-
-  themeSelect.addEventListener("change", () => {
-    document.body.className = themeSelect.value;
-  });
-
-  document.getElementById("startBtn").addEventListener("click", start);
-  document.getElementById("pauseBtn").addEventListener("click", pause);
-  document.getElementById("resetBtn").addEventListener("click", reset);
-  document.getElementById("notifBtn").addEventListener("click", requestNotif);
-
-  dismissBtn.addEventListener("click", () => overlay.classList.remove("show"));
-  restartBtn.addEventListener("click", () => {
-    reset();
-    start();
-  });
-
-  display.textContent = format(remaining);
-  setNotifStateText();
+  display.textContent=format(remaining);
   requestAnimationFrame(tick);
+}
+
+function start(){
+  overlay.classList.remove("show");
+  if(remaining<=0) remaining=duration;
+  running=true;
+  stateText.textContent="Running";
+  lastTick=performance.now();
+}
+
+function pause(){
+  running=false;
+  stateText.textContent="Paused";
+}
+
+function reset(){
+  running=false;
+  remaining=duration;
+  stateText.textContent="Stopped";
+  overlay.classList.remove("show");
+}
+
+function finish(){
+  running=false;
+  remaining=0;
+  stateText.textContent="Finished";
+  sendNotification();
+  playSound();
+  overlay.classList.add("show");
+}
+
+/* Non musical longer sound */
+
+function playSound(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const seconds=2.5;
+    const bufferSize=Math.floor(ctx.sampleRate*seconds);
+    const buffer=ctx.createBuffer(1,bufferSize,ctx.sampleRate);
+    const data=buffer.getChannelData(0);
+
+    for(let i=0;i<data.length;i++){
+      data[i]=(Math.random()*2-1)*0.12;
+    }
+
+    const src=ctx.createBufferSource();
+    const gain=ctx.createGain();
+    const now=ctx.currentTime;
+
+    gain.gain.setValueAtTime(0.0001,now);
+    gain.gain.exponentialRampToValueAtTime(0.8,now+0.05);
+    gain.gain.exponentialRampToValueAtTime(0.0001,now+seconds);
+
+    src.buffer=buffer;
+    src.connect(gain);
+    gain.connect(ctx.destination);
+
+    src.start();
+    src.stop(now+seconds);
+
+    setTimeout(()=>ctx.close(),3000);
+  }catch(e){}
+}
+
+/* Events */
+
+minutesInput.addEventListener("change",()=>{
+  const m=Math.max(1,Number(minutesInput.value||20));
+  minutesInput.value=m;
+  duration=m*60*1000;
+  remaining=duration;
+});
+
+themeSelect.addEventListener("change",()=>{
+  document.body.className=themeSelect.value;
+});
+
+document.getElementById("startBtn").onclick=start;
+document.getElementById("pauseBtn").onclick=pause;
+document.getElementById("resetBtn").onclick=reset;
+document.getElementById("enableNotifBtn").onclick=enableNotifications;
+document.getElementById("disableNotifBtn").onclick=disableNotifications;
+
+dismissBtn.onclick=()=>overlay.classList.remove("show");
+restartBtn.onclick=()=>{ reset(); start(); };
+
+display.textContent=format(remaining);
+updateNotifUI();
+requestAnimationFrame(tick);
+
 })();
 </script>
 
