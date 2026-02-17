@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Screen Timer</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+
 <style>
 :root{
   --bg:#000;
@@ -17,10 +19,10 @@
   --danger:#ff5c7a;
   --radius:14px;
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
-  --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  --sans: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
 }
 
-/* Dark theme */
+/* Dark Theme */
 body.theme-dark{
   --bg:#000;
   --card:#0a0a0a;
@@ -31,7 +33,7 @@ body.theme-dark{
   --btnhover:rgba(255,255,255,0.12);
 }
 
-/* White theme */
+/* White Theme */
 body.theme-white{
   --bg:#f6f6f6;
   --card:#ffffff;
@@ -55,12 +57,21 @@ body{
   padding:16px;
 }
 
+/* Title Styling */
+.title{
+  font-size:18px;
+  font-weight:600;
+  letter-spacing:0.5px;
+  margin-bottom:18px;
+  opacity:0.95;
+}
+
 .card{
   width:min(620px,100%);
   background:var(--card);
   border:1px solid var(--line);
   border-radius:var(--radius);
-  padding:18px;
+  padding:22px;
 }
 
 .top{
@@ -73,13 +84,13 @@ body{
 .status{
   font-size:12px;
   color:var(--muted);
-  font-weight:700;
+  font-weight:600;
 }
 
 .time{
   font-family:var(--mono);
   font-size:clamp(56px,10vw,92px);
-  margin:20px 0;
+  margin:22px 0;
 }
 
 .controls{
@@ -100,7 +111,7 @@ body{
 label{
   font-size:12px;
   color:var(--muted);
-  font-weight:700;
+  font-weight:600;
 }
 
 input, select{
@@ -109,7 +120,7 @@ input, select{
   background:transparent;
   color:var(--text);
   font-family:var(--mono);
-  font-weight:700;
+  font-weight:600;
 }
 
 input[type="number"]{width:70px;}
@@ -121,7 +132,7 @@ button{
   padding:8px 12px;
   border-radius:10px;
   cursor:pointer;
-  font-weight:800;
+  font-weight:600;
 }
 
 button:hover{background:var(--btnhover);}
@@ -134,7 +145,7 @@ button.danger{
 .small{
   font-size:12px;
   color:var(--muted);
-  margin-top:8px;
+  margin-top:10px;
   line-height:1.4;
 }
 
@@ -165,15 +176,15 @@ body.theme-white .overlay{
   background:var(--card);
   border:1px solid var(--line);
   border-radius:var(--radius);
-  padding:18px;
+  padding:20px;
   text-align:center;
   width:min(480px,100%);
 }
 
 .modal h2{
   margin:0 0 10px 0;
-  font-size:18px;
-  font-weight:900;
+  font-size:16px;
+  font-weight:700;
 }
 
 .modal p{
@@ -186,6 +197,8 @@ body.theme-white .overlay{
 <body class="theme-dark">
 
 <main class="card">
+
+<div class="title">Screen Timer</div>
 
 <div class="top">
   <div class="status" id="stateText">Stopped</div>
@@ -217,7 +230,7 @@ body.theme-white .overlay{
 </div>
 
 <p class="notifState" id="notifState">Permission: unknown | Website setting: OFF</p>
-<p class="small">Timer continues while switching tabs (browser must stay open).</p>
+<p class="small">Timer continues while switching tabs (browser must remain open).</p>
 
 </main>
 
@@ -240,7 +253,6 @@ const minutesInput = document.getElementById("minutesInput");
 const themeSelect = document.getElementById("themeSelect");
 const stateText = document.getElementById("stateText");
 const notifState = document.getElementById("notifState");
-
 const overlay = document.getElementById("overlay");
 const dismissBtn = document.getElementById("dismissBtn");
 const restartBtn = document.getElementById("restartBtn");
@@ -250,8 +262,6 @@ let remaining = duration;
 let running = false;
 let lastTick = performance.now();
 let notificationsEnabled = localStorage.getItem("notificationsEnabled")==="true";
-
-/* Notification control */
 
 function updateNotifUI(){
   if(!("Notification" in window)){
@@ -264,10 +274,7 @@ function updateNotifUI(){
 }
 
 async function enableNotifications(){
-  if(!("Notification" in window)){
-    alert("Notifications not supported.");
-    return;
-  }
+  if(!("Notification" in window)) return;
   const perm=await Notification.requestPermission();
   if(perm==="granted"){
     notificationsEnabled=true;
@@ -291,7 +298,6 @@ function disableNotifications(){
 
 function sendNotification(){
   if(!notificationsEnabled) return;
-  if(!("Notification" in window)) return;
   if(Notification.permission!=="granted") return;
 
   new Notification("Take a break",{
@@ -299,8 +305,6 @@ function sendNotification(){
     requireInteraction:true
   });
 }
-
-/* Timer */
 
 function format(ms){
   const t=Math.ceil(ms/1000);
@@ -351,44 +355,8 @@ function finish(){
   remaining=0;
   stateText.textContent="Finished";
   sendNotification();
-  playSound();
   overlay.classList.add("show");
 }
-
-/* Non musical longer sound */
-
-function playSound(){
-  try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
-    const seconds=2.5;
-    const bufferSize=Math.floor(ctx.sampleRate*seconds);
-    const buffer=ctx.createBuffer(1,bufferSize,ctx.sampleRate);
-    const data=buffer.getChannelData(0);
-
-    for(let i=0;i<data.length;i++){
-      data[i]=(Math.random()*2-1)*0.12;
-    }
-
-    const src=ctx.createBufferSource();
-    const gain=ctx.createGain();
-    const now=ctx.currentTime;
-
-    gain.gain.setValueAtTime(0.0001,now);
-    gain.gain.exponentialRampToValueAtTime(0.8,now+0.05);
-    gain.gain.exponentialRampToValueAtTime(0.0001,now+seconds);
-
-    src.buffer=buffer;
-    src.connect(gain);
-    gain.connect(ctx.destination);
-
-    src.start();
-    src.stop(now+seconds);
-
-    setTimeout(()=>ctx.close(),3000);
-  }catch(e){}
-}
-
-/* Events */
 
 minutesInput.addEventListener("change",()=>{
   const m=Math.max(1,Number(minutesInput.value||20));
