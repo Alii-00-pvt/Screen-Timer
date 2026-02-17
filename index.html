@@ -1,466 +1,340 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Screen Timer</title>
-  <meta name="theme-color" content="#0b1220" />
-  <style>
-    :root{
-      --bg1:#0b1220;
-      --bg2:#0a1a16;
-      --card: rgba(255,255,255,0.06);
-      --line: rgba(255,255,255,0.12);
-      --text:#f3f6fb;
-      --muted: rgba(243,246,251,0.70);
-      --accent:#7cdbff;
-      --accent2:#b7ff8a;
-      --danger:#ff6b8a;
-      --radius: 18px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Screen Timer</title>
+<meta name="theme-color" content="#1f252d" />
 
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
-    body{
-      margin:0;
-      font-family: var(--sans);
-      color: var(--text);
-      background:
-        radial-gradient(900px 700px at 25% 15%, rgba(124,219,255,0.18), transparent 60%),
-        radial-gradient(900px 700px at 80% 80%, rgba(183,255,138,0.14), transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 22px;
-    }
+<style>
+:root{
+  --card: rgba(255,255,255,0.05);
+  --line: rgba(255,255,255,0.12);
+  --text:#f3f6fb;
+  --muted: rgba(243,246,251,0.65);
+  --radius:18px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+  --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto;
+}
 
-    .card{
-      width: min(720px, 100%);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--card);
-      backdrop-filter: blur(12px);
-      padding: 22px;
-      box-shadow: 0 24px 70px rgba(0,0,0,0.55);
-    }
+/* ===== Soft Themes ===== */
 
-    .row{
-      display:flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
+body.theme-mist{
+  --bg1:#1f252d;
+  --bg2:#232b35;
+  --accent:#a8c3d8;
+  --accent2:#c9dce8;
+}
 
-    .time{
-      font-family: var(--mono);
-      font-size: clamp(56px, 10vw, 92px);
-      letter-spacing: 1px;
-      margin: 18px 0 14px 0;
-    }
+body.theme-sage{
+  --bg1:#1e2421;
+  --bg2:#232a26;
+  --accent:#9fb9a3;
+  --accent2:#c7dccb;
+}
 
-    .controls{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items:center;
-    }
+body.theme-stone{
+  --bg1:#24221f;
+  --bg2:#2a2824;
+  --accent:#c8b9a6;
+  --accent2:#e2d6c8;
+}
 
-    .field{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,0.18);
-    }
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;}
 
-    label{
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 600;
-    }
+body{
+  font-family:var(--sans);
+  color:var(--text);
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
 
-    input[type="number"]{
-      width: 92px;
-      border: 0;
-      outline: none;
-      background: transparent;
-      color: var(--text);
-      font-family: var(--mono);
-      font-size: 14px;
-    }
+.card{
+  width:min(680px,100%);
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  background:var(--card);
+  backdrop-filter:blur(12px);
+  padding:22px;
+  box-shadow:0 25px 60px rgba(0,0,0,0.5);
+}
 
-    button{
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,0.18);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 14px;
-      cursor: pointer;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-    }
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+}
 
-    button:hover{ background: rgba(255,255,255,0.07); }
+.time{
+  font-family:var(--mono);
+  font-size:clamp(56px,9vw,92px);
+  letter-spacing:1px;
+  margin:18px 0;
+}
 
-    button.primary{
-      border-color: rgba(124,219,255,0.35);
-      background: rgba(124,219,255,0.12);
-      color: var(--accent);
-    }
+.controls{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
 
-    button.danger{
-      border-color: rgba(255,107,138,0.35);
-      background: rgba(255,107,138,0.12);
-      color: var(--danger);
-    }
+.field{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:8px 10px;
+  background:rgba(0,0,0,0.15);
+}
 
-    .tiny{
-      font-size: 12px;
-      color: var(--muted);
-      margin: 0;
-    }
+label{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:600;
+}
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(0,0,0,0.18);
-      font-size: 12px;
-      color: var(--muted);
-    }
+input, select{
+  border:0;
+  outline:none;
+  background:transparent;
+  color:var(--text);
+  font-weight:600;
+  font-family:var(--mono);
+}
 
-    .dot{
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(243,246,251,0.55);
-      box-shadow: 0 0 0 4px rgba(243,246,251,0.08);
-    }
-    .dot.on{
-      background: var(--accent2);
-      box-shadow: 0 0 0 4px rgba(183,255,138,0.12);
-    }
+input[type="number"]{width:80px;}
 
-    /* Pop-up overlay */
-    .overlay{
-      position: fixed;
-      inset: 0;
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding: 22px;
-      background: rgba(0,0,0,0.65);
-      backdrop-filter: blur(12px);
-      z-index: 999;
-    }
-    .overlay.show{ display:flex; }
+button{
+  border:1px solid var(--line);
+  background:rgba(0,0,0,0.18);
+  color:var(--text);
+  padding:8px 12px;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:700;
+}
 
-    .modal{
-      width: min(620px, 100%);
-      border-radius: 22px;
-      border: 1px solid rgba(183,255,138,0.35);
-      background: rgba(8,10,14,0.86);
-      padding: 22px;
-      box-shadow: 0 28px 90px rgba(0,0,0,0.6);
-      text-align:center;
-    }
-    .modal h2{
-      margin: 0 0 10px 0;
-      font-size: 22px;
-      font-weight: 850;
-      letter-spacing: 0.2px;
-    }
-    .modal p{
-      margin: 0 0 18px 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-    .modal .big{
-      font-family: var(--mono);
-      font-size: 46px;
-      color: var(--accent2);
-      letter-spacing: 1px;
-      margin: 8px 0 16px 0;
-    }
+button:hover{background:rgba(255,255,255,0.07);}
 
-    /* Theme switch (simple, not flashy) */
-    body.theme-slate{
-      --bg1:#0b1220; --bg2:#0a1a16; --accent:#7cdbff; --accent2:#b7ff8a;
-    }
-    body.theme-sand{
-      --bg1:#120f0b; --bg2:#16130f; --accent:#ffd38a; --accent2:#a7f3d0;
-      --card: rgba(255,255,255,0.05);
-    }
-    body.theme-ink{
-      --bg1:#090a0c; --bg2:#0b0c10; --accent:#c4b5fd; --accent2:#93c5fd;
-      --card: rgba(255,255,255,0.05);
-    }
-  </style>
+button.primary{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
+button.danger{
+  border-color:#ff7a8c;
+  color:#ff7a8c;
+}
+
+.status{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* Overlay */
+
+.overlay{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(10px);
+}
+
+.overlay.show{display:flex;}
+
+.modal{
+  width:min(500px,100%);
+  background:rgba(15,17,20,0.9);
+  border-radius:20px;
+  border:1px solid var(--accent2);
+  padding:25px;
+  text-align:center;
+}
+
+.modal h2{
+  margin:0 0 10px 0;
+  font-weight:800;
+}
+
+.modal p{
+  margin:0 0 18px 0;
+  color:var(--muted);
+}
+
+</style>
 </head>
 
-<body class="theme-slate">
-  <main class="card">
-    <div class="row">
-      <div class="pill" id="statePill">
-        <span class="dot" id="stateDot"></span>
-        <span id="stateText">Stopped</span>
-      </div>
+<body class="theme-mist">
 
-      <div class="controls">
-        <div class="field">
-          <label for="minutesInput">Minutes</label>
-          <input id="minutesInput" type="number" min="1" max="600" value="20" />
-        </div>
+<main class="card">
 
-        <div class="field">
-          <label for="themeSelect">Theme</label>
-          <select id="themeSelect" style="border:0;background:transparent;color:var(--text);font-weight:700;">
-            <option value="theme-slate" selected>Slate</option>
-            <option value="theme-ink">Ink</option>
-            <option value="theme-sand">Sand</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="time" id="timeDisplay">20:00</div>
+  <div class="row">
+    <div class="status" id="stateText">Stopped</div>
 
     <div class="controls">
-      <button class="primary" id="startBtn">Start</button>
-      <button id="pauseBtn">Pause</button>
-      <button id="resetBtn" class="danger">Reset</button>
-      <button id="notifBtn">Enable notifications</button>
-      <button id="fsBtn">Full screen</button>
-    </div>
+      <div class="field">
+        <label>Minutes</label>
+        <input id="minutesInput" type="number" min="1" max="600" value="20">
+      </div>
 
-    <p class="tiny">Keep this tab open. The timer will continue even if you switch tabs.</p>
-  </main>
-
-  <!-- Pop-up -->
-  <div class="overlay" id="overlay">
-    <div class="modal" role="dialog" aria-modal="true">
-      <h2>Take a break</h2>
-      <div class="big">Time is up</div>
-      <p>Step back for a moment. Rest your eyes. Breathe.</p>
-      <div class="controls" style="justify-content:center;">
-        <button class="primary" id="dismissBtn">Dismiss</button>
-        <button id="restartBtn">Restart</button>
+      <div class="field">
+        <label>Theme</label>
+        <select id="themeSelect">
+          <option value="theme-mist" selected>Mist</option>
+          <option value="theme-sage">Sage</option>
+          <option value="theme-stone">Warm Stone</option>
+        </select>
       </div>
     </div>
   </div>
 
-  <script>
-    (function(){
-      const timeDisplay = document.getElementById("timeDisplay");
-      const minutesInput = document.getElementById("minutesInput");
-      const themeSelect = document.getElementById("themeSelect");
+  <div class="time" id="timeDisplay">20:00</div>
 
-      const startBtn = document.getElementById("startBtn");
-      const pauseBtn = document.getElementById("pauseBtn");
-      const resetBtn = document.getElementById("resetBtn");
-      const notifBtn = document.getElementById("notifBtn");
-      const fsBtn = document.getElementById("fsBtn");
+  <div class="controls">
+    <button class="primary" id="startBtn">Start</button>
+    <button id="pauseBtn">Pause</button>
+    <button id="resetBtn" class="danger">Reset</button>
+    <button id="notifBtn">Enable notifications</button>
+  </div>
 
-      const overlay = document.getElementById("overlay");
-      const dismissBtn = document.getElementById("dismissBtn");
-      const restartBtn = document.getElementById("restartBtn");
+</main>
 
-      const stateDot = document.getElementById("stateDot");
-      const stateText = document.getElementById("stateText");
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2>Take a break</h2>
+    <p>Timer finished.</p>
+    <button class="primary" id="dismissBtn">Dismiss</button>
+  </div>
+</div>
 
-      let durationMs = 20 * 60 * 1000;
-      let remainingMs = durationMs;
-      let running = false;
+<script>
+(function(){
 
-      let lastTick = performance.now();
-      let rafId = null;
+const display = document.getElementById("timeDisplay");
+const minutesInput = document.getElementById("minutesInput");
+const themeSelect = document.getElementById("themeSelect");
+const stateText = document.getElementById("stateText");
 
-      function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+const overlay = document.getElementById("overlay");
+const dismissBtn = document.getElementById("dismissBtn");
 
-      function fmt(ms){
-        const totalSeconds = Math.ceil(ms / 1000);
-        const m = Math.floor(totalSeconds / 60);
-        const s = totalSeconds % 60;
-        return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
-      }
+let duration = 20*60*1000;
+let remaining = duration;
+let running = false;
+let lastTick = performance.now();
 
-      function setState(isRunning){
-        stateDot.classList.toggle("on", isRunning);
-        stateText.textContent = isRunning ? "Running" : "Stopped";
-      }
+function format(ms){
+  const t = Math.ceil(ms/1000);
+  const m = Math.floor(t/60);
+  const s = t%60;
+  return String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
 
-      function updateDisplay(){
-        timeDisplay.textContent = fmt(remainingMs);
-      }
+function update(){
+  const now = performance.now();
+  const dt = now - lastTick;
+  lastTick = now;
 
-      function setDurationFromInput(){
-        const mins = clamp(Number(minutesInput.value || 20), 1, 600);
-        minutesInput.value = String(mins);
-        durationMs = mins * 60 * 1000;
-        remainingMs = durationMs;
-        updateDisplay();
-      }
+  if(running){
+    remaining -= dt;
+    if(remaining<=0){
+      finish();
+      return;
+    }
+  }
 
-      function requestNotifications(){
-        if (!("Notification" in window)) { return; }
-        Notification.requestPermission();
-      }
+  display.textContent = format(remaining);
+  requestAnimationFrame(update);
+}
 
-      function sendNotification(){
-        if (!("Notification" in window)) { return; }
-        if (Notification.permission !== "granted") { return; }
-        new Notification("Take a break", { body: "Timer finished." });
-      }
+function start(){
+  if(remaining<=0) remaining=duration;
+  running=true;
+  stateText.textContent="Running";
+  lastTick=performance.now();
+}
 
-      function playAlertSound(){
-        // Non musical noise burst
-        try{
-          const AudioCtx = window.AudioContext || window.webkitAudioContext;
-          const ctx = new AudioCtx();
+function pause(){
+  running=false;
+  stateText.textContent="Paused";
+}
 
-          const bufferSize = ctx.sampleRate * 0.9;
-          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-          const data = buffer.getChannelData(0);
+function reset(){
+  running=false;
+  remaining=duration;
+  display.textContent=format(remaining);
+  stateText.textContent="Stopped";
+}
 
-          for (let i = 0; i < bufferSize; i++) {
-            data[i] = (Math.random() * 2 - 1) * 0.18;
-          }
+function finish(){
+  running=false;
+  remaining=0;
+  display.textContent="00:00";
+  stateText.textContent="Finished";
+  notify();
+  playSound();
+  overlay.classList.add("show");
+}
 
-          const src = ctx.createBufferSource();
-          src.buffer = buffer;
+function notify(){
+  if("Notification" in window && Notification.permission==="granted"){
+    new Notification("Take a break",{body:"Timer finished."});
+  }
+}
 
-          const gain = ctx.createGain();
-          gain.gain.value = 0.9;
+function playSound(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const buffer=ctx.createBuffer(1,ctx.sampleRate*0.8,ctx.sampleRate);
+    const data=buffer.getChannelData(0);
+    for(let i=0;i<data.length;i++){
+      data[i]=(Math.random()*2-1)*0.2;
+    }
+    const src=ctx.createBufferSource();
+    src.buffer=buffer;
+    src.connect(ctx.destination);
+    src.start();
+  }catch(e){}
+}
 
-          src.connect(gain);
-          gain.connect(ctx.destination);
+function requestNotif(){
+  if("Notification" in window){
+    Notification.requestPermission();
+  }
+}
 
-          src.start();
-          src.stop(ctx.currentTime + 0.9);
+minutesInput.addEventListener("change",()=>{
+  const m=Math.max(1,Number(minutesInput.value));
+  duration=m*60*1000;
+  remaining=duration;
+  display.textContent=format(remaining);
+});
 
-          setTimeout(() => ctx.close(), 1200);
-        } catch(e){}
-      }
+themeSelect.addEventListener("change",()=>{
+  document.body.className=themeSelect.value;
+});
 
-      function showPopup(){
-        overlay.classList.add("show");
-      }
+document.getElementById("startBtn").onclick=start;
+document.getElementById("pauseBtn").onclick=pause;
+document.getElementById("resetBtn").onclick=reset;
+document.getElementById("notifBtn").onclick=requestNotif;
+dismissBtn.onclick=()=>overlay.classList.remove("show");
 
-      function hidePopup(){
-        overlay.classList.remove("show");
-      }
+display.textContent=format(remaining);
+requestAnimationFrame(update);
 
-      function finish(){
-        running = false;
-        setState(false);
-        remainingMs = 0;
-        updateDisplay();
-        sendNotification();
-        playAlertSound();
-        showPopup();
-        stopLoop();
-      }
+})();
+</script>
 
-      function loop(){
-        const now = performance.now();
-        const dt = now - lastTick;
-        lastTick = now;
-
-        if (running) {
-          remainingMs -= dt;
-          if (remainingMs <= 0) {
-            finish();
-            return;
-          }
-          updateDisplay();
-        }
-
-        rafId = requestAnimationFrame(loop);
-      }
-
-      function start(){
-        hidePopup();
-        if (remainingMs <= 0) {
-          remainingMs = durationMs;
-        }
-        running = true;
-        setState(true);
-        lastTick = performance.now();
-        startLoop();
-      }
-
-      function pause(){
-        running = false;
-        setState(false);
-      }
-
-      function reset(){
-        running = false;
-        setState(false);
-        hidePopup();
-        remainingMs = durationMs;
-        updateDisplay();
-      }
-
-      function startLoop(){
-        if (rafId) { return; }
-        rafId = requestAnimationFrame(loop);
-      }
-
-      function stopLoop(){
-        if (!rafId) { return; }
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
-
-      async function toggleFullscreen(){
-        try{
-          if (!document.fullscreenElement) {
-            await document.documentElement.requestFullscreen();
-          } else {
-            await document.exitFullscreen();
-          }
-        } catch(e){}
-      }
-
-      // Events
-      minutesInput.addEventListener("change", () => {
-        setDurationFromInput();
-      });
-
-      themeSelect.addEventListener("change", () => {
-        document.body.classList.remove("theme-slate","theme-ink","theme-sand");
-        document.body.classList.add(themeSelect.value);
-      });
-
-      startBtn.addEventListener("click", start);
-      pauseBtn.addEventListener("click", pause);
-      resetBtn.addEventListener("click", reset);
-      notifBtn.addEventListener("click", requestNotifications);
-      fsBtn.addEventListener("click", toggleFullscreen);
-
-      dismissBtn.addEventListener("click", hidePopup);
-      restartBtn.addEventListener("click", () => {
-        setDurationFromInput();
-        start();
-      });
-
-      // Init
-      setDurationFromInput();
-      setState(false);
-      updateDisplay();
-      startLoop();
-    })();
-  </script>
 </body>
 </html>
