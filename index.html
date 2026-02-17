@@ -142,13 +142,6 @@ button:hover{background:var(--btnhover);}
   margin-top:10px;
 }
 
-.notifState{
-  font-size:12px;
-  font-family:var(--mono);
-  margin-top:6px;
-  color:var(--muted);
-}
-
 /* Overlay */
 .overlay{
   position:fixed;
@@ -221,7 +214,6 @@ body.theme-white .overlay{
   <button id="enableNotifBtn">Enable Notifications</button>
 </div>
 
-<p class="notifState" id="notifState">Permission: unknown</p>
 <p class="small">Timer continues while switching tabs (browser must remain open).</p>
 
 </main>
@@ -244,7 +236,6 @@ const display = document.getElementById("timeDisplay");
 const minutesInput = document.getElementById("minutesInput");
 const themeSelect = document.getElementById("themeSelect");
 const stateText = document.getElementById("stateText");
-const notifState = document.getElementById("notifState");
 const overlay = document.getElementById("overlay");
 const dismissBtn = document.getElementById("dismissBtn");
 const restartBtn = document.getElementById("restartBtn");
@@ -254,25 +245,9 @@ let remaining = duration;
 let running = false;
 let lastTick = performance.now();
 
-function updateNotifUI(){
-  if(!("Notification" in window)){
-    notifState.textContent="Notifications not supported";
-    return;
-  }
-  notifState.textContent="Permission: "+Notification.permission;
-}
-
 async function enableNotifications(){
   if(!("Notification" in window)) return;
-  const perm=await Notification.requestPermission();
-  updateNotifUI();
-
-  if(perm==="granted"){
-    new Notification("Notifications enabled",{
-      body:"You will receive alerts when the timer finishes.",
-      requireInteraction:true
-    });
-  }
+  await Notification.requestPermission();
 }
 
 function sendNotification(){
@@ -357,7 +332,6 @@ dismissBtn.onclick=()=>overlay.classList.remove("show");
 restartBtn.onclick=()=>{ reset(); start(); };
 
 display.textContent=format(remaining);
-updateNotifUI();
 requestAnimationFrame(tick);
 
 })();
